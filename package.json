@@ -1,0 +1,23 @@
+{
+  "name": "taskforge-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "build:deps": "pnpm --filter @flowdesk/types build",
+    "dev": "pnpm build:deps && pnpm --filter @flowdesk/dashboard-web dev",
+    "build": "pnpm build:deps && pnpm --filter @flowdesk/dashboard-web build",
+    "typecheck": "pnpm build:deps && pnpm --filter @flowdesk/dashboard-web typecheck"
+  },
+  "devDependencies": {
+    "typescript": "5.7.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "5.7.3"
+    }
+  }
+}

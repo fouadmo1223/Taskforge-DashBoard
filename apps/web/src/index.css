@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* Design tokens — an original palette for the admin dashboard, not shared with the
+   main product's design system. Light values on :root, overridden in .dark. Every
+   token is referenced through @theme so it becomes a Tailwind utility (bg-surface,
+   text-text-muted, border-border, etc.). */
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --shadow-pop: 0 10px 40px -8px rgb(0 0 0 / 0.25);
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-sunken: #f1f3f9;
+  --border: #e5e7f0;
+  --border-strong: #cbd0e0;
+  --text: #12172b;
+  --text-muted: #565f78;
+  --text-subtle: #9aa2b8;
+  --primary: #5b5bf6;
+  --primary-hover: #4b4bef;
+  --primary-contrast: #ffffff;
+  --primary-soft: #edeeff;
+  --success: #17a361;
+  --success-soft: #e9f9f0;
+  --warning: #c8790a;
+  --warning-soft: #fdf3e2;
+  --danger: #d6335a;
+  --danger-soft: #fdeaef;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0c0e17;
+  --surface: #12141f;
+  --surface-elevated: #171a29;
+  --surface-sunken: #1b1e2f;
+  --border: #262a3d;
+  --border-strong: #383d57;
+  --text: #e7e9f3;
+  --text-muted: #9aa1bd;
+  --text-subtle: #676e8c;
+  --primary: #8586ff;
+  --primary-hover: #9c9dff;
+  --primary-contrast: #0c0e17;
+  --primary-soft: #1e2040;
+  --success: #34d68f;
+  --success-soft: #0e2c1f;
+  --warning: #f0a93e;
+  --warning-soft: #33230a;
+  --danger: #f2698c;
+  --danger-soft: #391521;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
