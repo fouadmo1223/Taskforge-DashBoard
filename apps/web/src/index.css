@@ -91,3 +91,35 @@ body {
     Roboto,
     sans-serif;
 }
+
+/* Custom scrollbar — thin, matches the theme, same in both light and dark since it
+   references the design tokens rather than hardcoded colors. Firefox via the
+   standard properties, everything else via the WebKit pseudo-elements. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border-strong);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-subtle);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
