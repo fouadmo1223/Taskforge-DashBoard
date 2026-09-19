@@ -239,8 +239,15 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   the platform" vs. "moderate the discourse of every conversation happening on it."
 - [ ] **Phase 11 — Admin activity/audit log page.**
 - [ ] **Phase 12 — Settings page** (whatever's platform-configurable — scope TBD).
-- [ ] **Phase 13 — Polish pass**: Framer Motion micro-interactions, responsive/mobile
-  pass, full ar/RTL QA, loading/error/success states audit, accessibility pass.
+- [~] **Phase 13 — Polish pass** (started early, commit `fc063c3`): found and fixed a real
+  RTL bug via live QA — Radix primitives (Select, Dialog, etc.) don't infer RTL from
+  `document.dir`; they need an explicit `DirectionProvider` (`@radix-ui/react-direction`)
+  or their internal positioning/keyboard-nav silently behaves as LTR even though the
+  visible layout is mirrored. Also fixed long Arabic Select labels wrapping to two lines
+  (missing `truncate`/`min-w-0` on the trigger). Added entrance animations: per-route
+  fade+rise transition, staggered fade-in on DataTable rows and dashboard stat cards.
+  Still outstanding: full responsive/mobile pass, broader RTL QA across every page (not
+  just what's been spot-checked), accessibility pass.
 - [ ] **Phase 14 — Push to
   `https://github.com/fouadmo1223/Taskforge-DashBoard.git`** once the above is in a
   genuinely working state (per explicit instruction: push after finishing, not before).
