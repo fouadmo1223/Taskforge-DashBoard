@@ -177,4 +177,17 @@ export default {
     attachments: 'المرفقات',
     subtasks: 'المهام الفرعية',
   },
+  activity: {
+    title: 'النشاط',
+    subtitle: 'إجراءات الإدارة الحساسة عبر المنصة، الأحدث أولًا.',
+    empty: 'لا يوجد نشاط بعد',
+    loadMore: 'تحميل المزيد',
+    by: 'بواسطة {{name}}',
+    system: 'النظام',
+    action_user_verified_by_admin: 'توثيق بريد مستخدم',
+    action_user_banned: 'حظر مستخدم',
+    action_user_unbanned: 'رفع حظر مستخدم',
+    action_project_archived_by_admin: 'أرشفة مشروع',
+    action_project_restored_by_admin: 'استعادة مشروع',
+  },
 } as const;

@@ -177,4 +177,17 @@ export default {
     attachments: 'Attachments',
     subtasks: 'Subtasks',
   },
+  activity: {
+    title: 'Activity',
+    subtitle: 'Sensitive admin actions across the platform, newest first.',
+    empty: 'No activity yet',
+    loadMore: 'Load more',
+    by: 'by {{name}}',
+    system: 'System',
+    action_user_verified_by_admin: 'Verified email for a user',
+    action_user_banned: 'Banned a user',
+    action_user_unbanned: 'Unbanned a user',
+    action_project_archived_by_admin: 'Archived a project',
+    action_project_restored_by_admin: 'Restored a project',
+  },
 } as const;
