@@ -28,8 +28,10 @@ export function Select<V extends string = string>({
           className,
         )}
       >
-        <RSelect.Value placeholder={placeholder} />
-        <RSelect.Icon>
+        <span className="min-w-0 flex-1 truncate text-start">
+          <RSelect.Value placeholder={placeholder} />
+        </span>
+        <RSelect.Icon className="shrink-0">
           <ChevronDown className="size-3.5 text-text-subtle" />
         </RSelect.Icon>
       </RSelect.Trigger>

@@ -9,12 +9,15 @@ export function StatsCard({
   icon,
   tone = 'neutral',
   loading,
+  index = 0,
 }: {
   label: string;
   value: number | string;
   icon?: ReactNode;
   tone?: 'neutral' | 'primary' | 'success' | 'warning' | 'danger';
   loading?: boolean;
+  /** position in a grid of cards — staggers the entrance so they don't all pop at once */
+  index?: number;
 }): React.ReactElement {
   const toneClass =
     tone === 'primary'
@@ -29,9 +32,9 @@ export function StatsCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.25, delay: index * 0.05, ease: [0.25, 1, 0.5, 1] }}
       className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
     >
       {icon && <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl', toneClass)}>{icon}</span>}

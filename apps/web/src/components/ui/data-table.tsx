@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Button } from './button';
@@ -84,22 +85,28 @@ export function DataTable<T extends { id: string }>({
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
-                <tr
-                  key={row.id}
-                  onClick={() => onRowClick?.(row)}
-                  className={cn(
-                    'border-b border-border transition-colors last:border-0',
-                    onRowClick && 'cursor-pointer hover:bg-surface-sunken',
-                  )}
-                >
-                  {columns.map((col) => (
-                    <td key={col.key} className={cn('px-4 py-3 align-middle text-text', col.className)}>
-                      {col.render(row)}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <AnimatePresence initial={false}>
+                {rows.map((row, i) => (
+                  <motion.tr
+                    key={row.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, delay: Math.min(i * 0.03, 0.3), ease: [0.25, 1, 0.5, 1] }}
+                    onClick={() => onRowClick?.(row)}
+                    className={cn(
+                      'border-b border-border transition-colors last:border-0',
+                      onRowClick && 'cursor-pointer hover:bg-surface-sunken',
+                    )}
+                  >
+                    {columns.map((col) => (
+                      <td key={col.key} className={cn('px-4 py-3 align-middle text-text', col.className)}>
+                        {col.render(row)}
+                      </td>
+                    ))}
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             )}
           </tbody>
         </table>
