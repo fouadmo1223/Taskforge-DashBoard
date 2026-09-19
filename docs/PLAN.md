@@ -1,7 +1,8 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phases 1-9 done (backend + frontend for users, workspaces, projects).
-Tasks management, activity log, and settings are still placeholder pages.**
+Status: **Phases 1-10 done (backend + frontend for users, workspaces, projects, tasks).
+Activity log and settings are still placeholder pages; no polish/responsive/RTL-QA pass
+yet.**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -227,7 +228,15 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   than a project (cascades to every project/task/member in it) and deserves its own
   explicit decision before any destructive action is wired up; deliberately read-only for
   now.
-- [ ] **Phase 10 — Tasks management** (list + detail page).
+- [x] **Phase 10 — Tasks management** (Taskforge-Back commit `304cb49`, dashboard
+  commit `a2c2b7c`): list with search + open/completed filter + priority filter,
+  cross-project. Assignee/reporter/project names resolved via batched lookups (never
+  N+1). Detail page shows description, priority/completion badges, and the task's own
+  already-denormalized counters (comment/attachment/subtask counts) rather than
+  re-querying those collections — same principle as reusing `commentCount` etc. straight
+  off the Task document instead of re-deriving them. No edit/delete actions on tasks —
+  wasn't asked for and content moderation at the task level felt out of scope for "manage
+  the platform" vs. "moderate the discourse of every conversation happening on it."
 - [ ] **Phase 11 — Admin activity/audit log page.**
 - [ ] **Phase 12 — Settings page** (whatever's platform-configurable — scope TBD).
 - [ ] **Phase 13 — Polish pass**: Framer Motion micro-interactions, responsive/mobile
