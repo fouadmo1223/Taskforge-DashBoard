@@ -189,5 +189,9 @@ export default {
     action_user_unbanned: 'رفع حظر مستخدم',
     action_project_archived_by_admin: 'أرشفة مشروع',
     action_project_restored_by_admin: 'استعادة مشروع',
+    action_project_create: 'إنشاء مشروع',
+    action_project_update: 'تحديث مشروع',
+    action_project_delete: 'حذف مشروع',
+    action_task_delete: 'حذف مهمة',
   },
 } as const;

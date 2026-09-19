@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   Activity,
   CheckSquare,
@@ -13,8 +13,10 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { useAdminUi } from './admin-ui.store';
 
 const ITEMS = [
   { to: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard', end: true },
@@ -26,8 +28,48 @@ const ITEMS = [
   { to: '/settings', icon: Settings, labelKey: 'nav.settings' },
 ] as const;
 
-export function AdminSidebar(): React.ReactElement {
+function NavItems({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }): React.ReactElement {
   const { t } = useTranslation();
+  return (
+    <nav className="flex flex-1 flex-col gap-1 p-2">
+      {ITEMS.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          end={'end' in item ? item.end : false}
+          onClick={onNavigate}
+          title={collapsed ? t(item.labelKey) : undefined}
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
+              isActive ? 'bg-primary-soft text-primary' : 'text-text-muted hover:bg-surface-sunken hover:text-text',
+            )
+          }
+        >
+          <item.icon className="size-4 shrink-0" />
+          {!collapsed && <span className="truncate">{t(item.labelKey)}</span>}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
+
+function Brand({ collapsed, action }: { collapsed?: boolean; action?: ReactNode }): React.ReactElement {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center gap-2 border-b border-border px-4 py-4">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-contrast">
+        <ShieldCheck className="size-4" />
+      </span>
+      {!collapsed && <span className="flex-1 truncate text-sm font-semibold text-text">{t('common.appName')}</span>}
+      {action}
+    </div>
+  );
+}
+
+export function AdminSidebar(): React.ReactElement {
+  const mobileNavOpen = useAdminUi((s) => s.mobileNavOpen);
+  const setMobileNavOpen = useAdminUi((s) => s.setMobileNavOpen);
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('taskforge-admin.sidebar-collapsed') === '1';
@@ -36,7 +78,7 @@ export function AdminSidebar(): React.ReactElement {
     }
   });
 
-  const toggle = (): void => {
+  const toggleCollapsed = (): void => {
     setCollapsed((v) => {
       const next = !v;
       try {
@@ -49,44 +91,56 @@ export function AdminSidebar(): React.ReactElement {
   };
 
   return (
-    <motion.aside
-      animate={{ width: collapsed ? 68 : 232 }}
-      transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
-      className="hidden shrink-0 flex-col border-e border-border bg-surface sm:flex"
-    >
-      <div className="flex items-center gap-2 border-b border-border px-4 py-4">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-contrast">
-          <ShieldCheck className="size-4" />
-        </span>
-        {!collapsed && <span className="truncate text-sm font-semibold text-text">{t('common.appName')}</span>}
-      </div>
-
-      <nav className="flex flex-1 flex-col gap-1 p-2">
-        {ITEMS.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={'end' in item ? item.end : false}
-            title={collapsed ? t(item.labelKey) : undefined}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
-                isActive ? 'bg-primary-soft text-primary' : 'text-text-muted hover:bg-surface-sunken hover:text-text',
-              )
-            }
-          >
-            <item.icon className="size-4 shrink-0" />
-            {!collapsed && <span className="truncate">{t(item.labelKey)}</span>}
-          </NavLink>
-        ))}
-      </nav>
-
-      <button
-        onClick={toggle}
-        className="m-2 flex items-center justify-center gap-2 rounded-lg p-2 text-text-subtle hover:bg-surface-sunken hover:text-text"
+    <>
+      {/* Desktop: persistent, collapsible */}
+      <motion.aside
+        animate={{ width: collapsed ? 68 : 232 }}
+        transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
+        className="hidden shrink-0 flex-col border-e border-border bg-surface sm:flex"
       >
-        {collapsed ? <ChevronsRight className="size-4 rtl:rotate-180" /> : <ChevronsLeft className="size-4 rtl:rotate-180" />}
-      </button>
-    </motion.aside>
+        <Brand collapsed={collapsed} />
+        <NavItems collapsed={collapsed} />
+        <button
+          onClick={toggleCollapsed}
+          className="m-2 flex items-center justify-center gap-2 rounded-lg p-2 text-text-subtle hover:bg-surface-sunken hover:text-text"
+        >
+          {collapsed ? <ChevronsRight className="size-4 rtl:rotate-180" /> : <ChevronsLeft className="size-4 rtl:rotate-180" />}
+        </button>
+      </motion.aside>
+
+      {/* Mobile: slide-in drawer over a backdrop, since the persistent sidebar is
+       * hidden entirely below the sm breakpoint — without this there would be no
+       * way to navigate at all on a phone. */}
+      <AnimatePresence>
+        {mobileNavOpen && (
+          <div className="sm:hidden">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setMobileNavOpen(false)}
+              className="fixed inset-0 z-40 bg-black/40"
+            />
+            <motion.aside
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+              className="fixed inset-y-0 start-0 z-50 flex w-64 flex-col border-e border-border bg-surface rtl:[--tw-translate-x:100%]"
+            >
+              <Brand
+                action={
+                  <button onClick={() => setMobileNavOpen(false)} className="rounded-lg p-1.5 text-text-subtle hover:bg-surface-sunken hover:text-text">
+                    <X className="size-4" />
+                  </button>
+                }
+              />
+              <NavItems onNavigate={() => setMobileNavOpen(false)} />
+            </motion.aside>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

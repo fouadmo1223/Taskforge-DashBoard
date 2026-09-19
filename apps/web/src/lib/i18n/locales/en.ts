@@ -189,5 +189,9 @@ export default {
     action_user_unbanned: 'Unbanned a user',
     action_project_archived_by_admin: 'Archived a project',
     action_project_restored_by_admin: 'Restored a project',
+    action_project_create: 'Created a project',
+    action_project_update: 'Updated a project',
+    action_project_delete: 'Deleted a project',
+    action_task_delete: 'Deleted a task',
   },
 } as const;

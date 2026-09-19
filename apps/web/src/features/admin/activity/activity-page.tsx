@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { Ban, CheckCircle2, ShieldCheck, Archive as ArchiveIcon, ArchiveRestore } from 'lucide-react';
+import { Ban, CheckCircle2, FilePlus, FileEdit, Trash2, ShieldCheck, Archive as ArchiveIcon, ArchiveRestore } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
 import { Button, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { RelativeTime } from '@/components/ui/relative-time';
@@ -12,6 +12,10 @@ const ACTION_ICON: Record<string, typeof ShieldCheck> = {
   'user.unbanned': ShieldCheck,
   'project.archived_by_admin': ArchiveIcon,
   'project.restored_by_admin': ArchiveRestore,
+  'project.create': FilePlus,
+  'project.update': FileEdit,
+  'project.delete': Trash2,
+  'task.delete': Trash2,
 };
 const ACTION_TONE: Record<string, string> = {
   'user.verified_by_admin': 'bg-success-soft text-success',
@@ -19,12 +23,25 @@ const ACTION_TONE: Record<string, string> = {
   'user.unbanned': 'bg-success-soft text-success',
   'project.archived_by_admin': 'bg-warning-soft text-warning',
   'project.restored_by_admin': 'bg-success-soft text-success',
+  'project.create': 'bg-primary-soft text-primary',
+  'project.update': 'bg-primary-soft text-primary',
+  'project.delete': 'bg-danger-soft text-danger',
+  'task.delete': 'bg-danger-soft text-danger',
 };
+
+/** Humanized fallback for any action string that doesn't have a translation yet
+ * (e.g. a new AuditService.record() call added elsewhere in the app later) — "task.
+ * create" becomes "Task create" instead of showing the raw dotted code to an admin. */
+function humanizeAction(action: string): string {
+  return action
+    .replace(/[._]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 function ActivityRow({ entry, index }: { entry: AdminAuditLogView; index: number }): React.ReactElement {
   const { t } = useTranslation();
   const Icon = ACTION_ICON[entry.action] ?? ShieldCheck;
-  const label = t(`activity.action_${entry.action.replace(/\./g, '_')}`, { defaultValue: entry.action });
+  const label = t(`activity.action_${entry.action.replace(/\./g, '_')}`, { defaultValue: humanizeAction(entry.action) });
   const who = entry.actorName ?? entry.actorLabel ?? t('activity.system');
 
   return (
