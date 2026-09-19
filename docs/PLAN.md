@@ -1,7 +1,9 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phase 1 complete. Phase 2 (backend foundation) partially complete — auth +
-stats + users API done, workspaces/projects/tasks admin endpoints still to do.**
+Status: **Phases 1-2 done. Phase 3 (frontend foundation), 4 (layout), 5 (DataTable), 6
+(dashboard home) and 7 (users management) are built and verified working end-to-end
+except live login (blocked locally by CORS — see §6). Workspaces/projects/tasks
+management, activity log, and settings are still placeholder pages.**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -179,21 +181,40 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
     from `E:\trello`'s copy in an earlier, unrelated piece of work — the backend split
     happened before that removal was made, so it was never carried over here. Unrelated
     to the admin dashboard; flagging so it isn't mistaken for something this work broke.
-- [ ] **Phase 3 — This repo's foundation**: Vite scaffold, `@flowdesk/types`/`utils`
-  copied in, API client + auth store (admin login re-uses the *same* `/auth/login`
-  endpoint — a platform admin is still a `User`, just flagged), i18n (en/ar) + RTL,
-  theme store, base design-system primitives (Button, Input, Select, Dialog, Badge,
-  Skeleton, toast, confirm) built fresh but matching the visual language described in the
-  brief.
-- [ ] **Phase 4 — AdminLayout/Sidebar/Header**, routing skeleton (`/admin`, `/admin/users`,
-  `/admin/users/:id`, `/admin/workspaces`, `/admin/workspaces/:id`,
-  `/admin/projects`, `/admin/projects/:id`, `/admin/tasks`, `/admin/tasks/:id`,
-  `/admin/activity`, `/admin/settings`).
-- [ ] **Phase 5 — DataTable component** (server-side paging/sort/filter/search, skeleton
-  rows, empty/error states) — built once, reused for every list page.
-- [ ] **Phase 6 — Dashboard home** (stats cards + recent users/projects/activity).
-- [ ] **Phase 7 — Users management** (list + detail page + verify/ban/unban/delete +
-  role/permission display).
+- [x] **Phase 3 — This repo's foundation** (commit at HEAD): Vite + React 19 scaffold,
+  own copy of `@flowdesk/types` (utils wasn't actually needed — nothing in this app uses
+  it, dropped to keep scope real rather than cargo-culting the split-repo pattern), API
+  client (`lib/api/client.ts`, byte-for-byte the same battle-tested pattern as
+  Taskforge-Front's), auth store (reuses the exact same `/auth/login`/`/auth/refresh`
+  endpoints — a platform admin is still a plain `User`, just flagged; the store itself
+  rejects a successful login whose `user.isPlatformAdmin` is false and calls
+  `/auth/logout` so it doesn't leave a dangling session for an account this app will
+  never let in), i18n (en/ar, RTL via `document.dir`, same mechanism as the main app),
+  theme store (persisted, `dark` class toggle), an original Tailwind v4 token palette
+  (`src/index.css`) — deliberately not shared with the main product's design system.
+  Design-system primitives built fresh: Button, Input/Textarea, Field, Select (Radix),
+  Badge, Skeleton, EmptyState, ErrorState, Avatar, Dialog, `confirm()`, `toast()`.
+- [x] **Phase 4 — AdminLayout/Sidebar/Header**: collapsible sidebar (Framer Motion width
+  animation, persisted collapsed state, active-route highlighting), header with
+  language switcher + theme toggle + user menu + logout. Routing: `/login`, `/` (dashboard
+  home), `/users`, `/users/:id`, plus placeholder pages at `/workspaces`, `/projects`,
+  `/activity`, `/settings` so the sidebar nav has somewhere real to go while those phases
+  are still pending.
+- [x] **Phase 5 — DataTable component** (`components/ui/data-table.tsx`): server-side
+  paging only (no client-side filtering of a full dataset), skeleton rows while loading,
+  empty state, error state with retry, row click navigation. Built once, already reused
+  for the users list.
+- [x] **Phase 6 — Dashboard home**: 10 stat cards across users/workspaces/projects/tasks,
+  backed by the real `/admin/stats` endpoint (no mock data, per the brief's explicit
+  rule). No charts yet — the brief said only add them when they add real value; revisit
+  once there's a reason (e.g. a growth trend) rather than adding one just to fill space.
+- [x] **Phase 7 — Users management (list + detail)**: list page has search + status
+  filter + verification filter + pagination, all server-side. Detail page is a real route
+  (`/users/:id`, not a modal) with profile info, per-user cross-workspace stats, and a
+  Danger Zone with verify/ban/unban wired to the real endpoints — ban opens a small
+  dialog for an optional reason, matching the brief's "small forms in dialogs, full
+  entities in routes" rule. **Delete user intentionally not implemented yet** — still
+  blocked on the ownership-transfer decision in §3.
 - [ ] **Phase 8 — Projects management** (list + detail page + archive/restore/delete).
 - [ ] **Phase 9 — Workspaces management** (list + detail page).
 - [ ] **Phase 10 — Tasks management** (list + detail page).
@@ -204,6 +225,18 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
 - [ ] **Phase 14 — Push to
   `https://github.com/fouadmo1223/Taskforge-DashBoard.git`** once the above is in a
   genuinely working state (per explicit instruction: push after finishing, not before).
+  Note: the repo's `origin` remote is already configured and the plan doc itself has been
+  pushed there — "push after finish" is being read as "don't push the *app* prematurely,"
+  not "don't push the plan/progress doc," so progress stays visible on GitHub throughout.
+
+## 6. Known gap: local dev needs a CORS allowlist entry
+
+Verified live in a browser: the login request from `http://localhost:5174` reaches
+Taskforge-Back correctly (right endpoint, right payload) but is rejected by CORS —
+`WEB_ORIGIN` on that Vercel project doesn't include this dashboard's origin. `WEB_ORIGIN`
+already supports a comma-separated list, so the fix when needed is just appending
+`http://localhost:5174` (dev) and this dashboard's real deployed URL (once it has one) to
+that env var and redeploying. Not fixed yet — waiting on the user's call on timing.
 
 ## 5. Progress log
 
