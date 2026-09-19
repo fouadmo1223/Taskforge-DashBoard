@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'motion/react';
@@ -68,8 +68,19 @@ function Brand({ collapsed, action }: { collapsed?: boolean; action?: ReactNode 
 }
 
 export function AdminSidebar(): React.ReactElement {
+  const { t } = useTranslation();
   const mobileNavOpen = useAdminUi((s) => s.mobileNavOpen);
   const setMobileNavOpen = useAdminUi((s) => s.setMobileNavOpen);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setMobileNavOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileNavOpen, setMobileNavOpen]);
+
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('taskforge-admin.sidebar-collapsed') === '1';
@@ -102,6 +113,8 @@ export function AdminSidebar(): React.ReactElement {
         <NavItems collapsed={collapsed} />
         <button
           onClick={toggleCollapsed}
+          aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+          title={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
           className="m-2 flex items-center justify-center gap-2 rounded-lg p-2 text-text-subtle hover:bg-surface-sunken hover:text-text"
         >
           {collapsed ? <ChevronsRight className="size-4 rtl:rotate-180" /> : <ChevronsLeft className="size-4 rtl:rotate-180" />}
@@ -123,6 +136,9 @@ export function AdminSidebar(): React.ReactElement {
               className="fixed inset-0 z-40 bg-black/40"
             />
             <motion.aside
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('common.appName')}
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -131,7 +147,11 @@ export function AdminSidebar(): React.ReactElement {
             >
               <Brand
                 action={
-                  <button onClick={() => setMobileNavOpen(false)} className="rounded-lg p-1.5 text-text-subtle hover:bg-surface-sunken hover:text-text">
+                  <button
+                    onClick={() => setMobileNavOpen(false)}
+                    aria-label={t('common.closeMenu')}
+                    className="rounded-lg p-1.5 text-text-subtle hover:bg-surface-sunken hover:text-text"
+                  >
                     <X className="size-4" />
                   </button>
                 }

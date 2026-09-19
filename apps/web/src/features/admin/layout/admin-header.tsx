@@ -18,7 +18,7 @@ export function AdminHeader(): React.ReactElement {
       <button
         onClick={() => setMobileNavOpen(true)}
         className="flex size-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-text sm:hidden"
-        aria-label="Open menu"
+        aria-label={t('common.openMenu')}
       >
         <Menu className="size-4" />
       </button>
@@ -33,7 +33,8 @@ export function AdminHeader(): React.ReactElement {
         <button
           onClick={() => setPreference(resolved === 'dark' ? 'light' : 'dark')}
           className="flex size-9 items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-text"
-          aria-label="Toggle theme"
+          aria-label={t('common.toggleTheme')}
+          title={t('common.toggleTheme')}
         >
           {resolved === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </button>
