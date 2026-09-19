@@ -1,9 +1,8 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phases 1-11 done. Settings (Phase 12) needs the user's input on scope before
-it can be anything more than a placeholder — see the note there. RTL fixes and entrance
-animations started in Phase 13 as they were found during live use; the rest of that
-phase (full responsive/mobile pass, broader RTL QA, accessibility) is still open.**
+Status: **Phases 1-12 done. Phase 13 (polish) has real progress (RTL fix, mobile nav
+drawer, accessibility pass, animations) but isn't a completed systematic pass. Only
+remaining fully-blocked item is user-delete (§3, needs an ownership-transfer decision).**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -251,14 +250,16 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   is a simple timeline with infinite scroll (cursor-based, matching the append-heavy-log
   pagination choice from Phase 1's analysis) — deliberately not a DataTable, a chronological
   feed reads better here than a sortable/filterable grid.
-- [ ] **Phase 12 — Settings page**: genuinely blocked, not skipped — the codebase has no
-  existing platform-wide config model to surface (workspace-level settings exist, e.g.
-  `Workspace.settings`, but nothing platform-wide), and the brief itself says "whatever's
-  platform-configurable." Needs the user to say what should actually live here (rate
-  limits? feature flags? maintenance mode? something else?) before it's anything more
-  than an empty placeholder — inventing settings nobody asked for would violate the
-  brief's own "do not create mock/static data" and "do not create pages nobody needs"
-  spirit just as much as mock data would.
+- [x] **Phase 12 — Settings page** (Taskforge-Back commit `4929ab4`, dashboard commit
+  `061eba9`): resolved without inventing anything — there genuinely was one real,
+  necessary capability missing from the whole system: **granting/revoking platform admin
+  access through the app**. Before this, the *only* way to create a second admin was
+  running `bootstrap-admin.ts` directly against the database — there was no API endpoint
+  for it at all (`UsersService.setPlatformAdmin()` existed since Phase 2 but nothing ever
+  called it). Added `PATCH /admin/users/:id/platform-admin`, blocked an admin from
+  revoking their own access (would strand them), and the settings page is a search-to-
+  grant + list-with-revoke UI backed entirely by real data — no placeholder/mock content
+  anywhere on it. Every grant/revoke is also recorded in the activity log from Phase 11.
 - [~] **Phase 13 — Polish pass** (commits `fc063c3`, `04fdd8a`, `7be274e`):
   - RTL: `DirectionProvider` fix (Radix doesn't infer RTL from `document.dir` alone —
     needs an explicit direction context or positioning/keyboard-nav silently stays LTR),
