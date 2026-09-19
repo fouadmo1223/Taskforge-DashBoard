@@ -1,9 +1,7 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phases 1-2 done. Phase 3 (frontend foundation), 4 (layout), 5 (DataTable), 6
-(dashboard home) and 7 (users management) are built and verified working end-to-end
-except live login (blocked locally by CORS — see §6). Workspaces/projects/tasks
-management, activity log, and settings are still placeholder pages.**
+Status: **Phases 1-9 done (backend + frontend for users, workspaces, projects).
+Tasks management, activity log, and settings are still placeholder pages.**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -215,8 +213,20 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   dialog for an optional reason, matching the brief's "small forms in dialogs, full
   entities in routes" rule. **Delete user intentionally not implemented yet** — still
   blocked on the ownership-transfer decision in §3.
-- [ ] **Phase 8 — Projects management** (list + detail page + archive/restore/delete).
-- [ ] **Phase 9 — Workspaces management** (list + detail page).
+- [x] **Phase 8 — Projects management** (Taskforge-Back commit `b602916`, dashboard
+  commit `df15fd4`): list with search + status filter + visibility filter, cross-
+  workspace (a "workspace" column, not scoped to one). Detail page shows description,
+  status/visibility badges, and stats (members, boards, tasks, completed tasks). Archive
+  and restore both reuse the existing `ProjectsService.setArchived()` rather than
+  duplicating that logic — the admin API is a thin cross-workspace wrapper, not a
+  reimplementation. **Delete not implemented** — same reasoning as user-delete, revisit
+  together.
+- [x] **Phase 9 — Workspaces management**: list with search, owner name resolved via a
+  batched lookup (not N+1), member/project counts. Detail page shows owner + the same
+  counts. No archive/delete actions yet — workspace deletion is much higher-blast-radius
+  than a project (cascades to every project/task/member in it) and deserves its own
+  explicit decision before any destructive action is wired up; deliberately read-only for
+  now.
 - [ ] **Phase 10 — Tasks management** (list + detail page).
 - [ ] **Phase 11 — Admin activity/audit log page.**
 - [ ] **Phase 12 — Settings page** (whatever's platform-configurable — scope TBD).
