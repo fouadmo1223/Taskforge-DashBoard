@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import {
   Activity,
+  CheckSquare,
   ChevronsLeft,
   ChevronsRight,
   FolderKanban,
@@ -20,6 +21,7 @@ const ITEMS = [
   { to: '/users', icon: Users, labelKey: 'nav.users' },
   { to: '/workspaces', icon: FolderKanban, labelKey: 'nav.workspaces' },
   { to: '/projects', icon: KanbanSquare, labelKey: 'nav.projects' },
+  { to: '/tasks', icon: CheckSquare, labelKey: 'nav.tasks' },
   { to: '/activity', icon: Activity, labelKey: 'nav.activity' },
   { to: '/settings', icon: Settings, labelKey: 'nav.settings' },
 ] as const;
