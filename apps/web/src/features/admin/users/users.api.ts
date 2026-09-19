@@ -34,6 +34,7 @@ export interface AdminUsersQuery {
   search?: string;
   verification?: 'all' | 'verified' | 'unverified';
   status?: 'all' | 'active' | 'banned';
+  platformAdmin?: boolean;
 }
 
 const usersKey = (q: AdminUsersQuery) => ['admin', 'users', q] as const;
@@ -50,6 +51,7 @@ export function useAdminUsers(query: AdminUsersQuery) {
           search: query.search,
           verification: query.verification === 'all' ? undefined : query.verification,
           status: query.status === 'all' ? undefined : query.status,
+          platformAdmin: query.platformAdmin,
         },
       }),
     placeholderData: (prev) => prev,
@@ -86,4 +88,15 @@ export function useBanUser(id: string) {
 
 export function useUnbanUser(id: string) {
   return useUserMutation(id, 'unban');
+}
+
+export function useSetPlatformAdmin(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (isPlatformAdmin: boolean) => api.patch<AdminUserDetail>(`/admin/users/${id}/platform-admin`, { isPlatformAdmin }),
+    onSuccess: (user) => {
+      qc.setQueryData(userKey(id), user);
+      void qc.invalidateQueries({ queryKey: ['admin', 'users'], exact: false });
+    },
+  });
 }

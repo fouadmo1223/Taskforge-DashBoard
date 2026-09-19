@@ -12,7 +12,7 @@ import { ProjectDetailPage } from '@/features/admin/projects/project-detail-page
 import { TasksListPage } from '@/features/admin/tasks/tasks-list-page';
 import { TaskDetailPage } from '@/features/admin/tasks/task-detail-page';
 import { ActivityPage } from '@/features/admin/activity/activity-page';
-import { ComingSoonPage } from '@/features/admin/coming-soon-page';
+import { SettingsPage } from '@/features/admin/settings/settings-page';
 
 export const router = createBrowserRouter([
   {
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
       { path: 'tasks', element: <TasksListPage /> },
       { path: 'tasks/:id', element: <TaskDetailPage /> },
       { path: 'activity', element: <ActivityPage /> },
-      { path: 'settings', element: <ComingSoonPage titleKey="nav.settings" /> },
+      { path: 'settings', element: <SettingsPage /> },
     ],
   },
 ]);
