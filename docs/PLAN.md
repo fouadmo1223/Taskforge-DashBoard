@@ -259,15 +259,28 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   than an empty placeholder — inventing settings nobody asked for would violate the
   brief's own "do not create mock/static data" and "do not create pages nobody needs"
   spirit just as much as mock data would.
-- [~] **Phase 13 — Polish pass** (started early, commit `fc063c3`): found and fixed a real
-  RTL bug via live QA — Radix primitives (Select, Dialog, etc.) don't infer RTL from
-  `document.dir`; they need an explicit `DirectionProvider` (`@radix-ui/react-direction`)
-  or their internal positioning/keyboard-nav silently behaves as LTR even though the
-  visible layout is mirrored. Also fixed long Arabic Select labels wrapping to two lines
-  (missing `truncate`/`min-w-0` on the trigger). Added entrance animations: per-route
-  fade+rise transition, staggered fade-in on DataTable rows and dashboard stat cards.
-  Still outstanding: full responsive/mobile pass, broader RTL QA across every page (not
-  just what's been spot-checked), accessibility pass.
+- [~] **Phase 13 — Polish pass** (commits `fc063c3`, `04fdd8a`, `7be274e`):
+  - RTL: `DirectionProvider` fix (Radix doesn't infer RTL from `document.dir` alone —
+    needs an explicit direction context or positioning/keyboard-nav silently stays LTR),
+    long Arabic Select labels truncating instead of wrapping to two lines.
+  - Animations: per-route fade+rise transition, staggered fade-in on DataTable rows and
+    dashboard stat cards.
+  - Responsive: found and fixed a real gap, not just spot-checked — the sidebar was
+    `hidden` outright below `sm` with nothing replacing it, so there was **no way to
+    navigate at all on a phone**. Added a proper slide-in drawer (hamburger trigger,
+    backdrop, RTL-aware slide direction, Escape-to-close, basic dialog semantics).
+  - Accessibility: translated the aria-labels that were still hardcoded English
+    (`"Toggle theme"`, `"Open menu"`), added the ones that were missing entirely
+    (sidebar collapse/expand, mobile drawer close).
+  - Activity log accuracy: the page surfaces every real audit action across the app, not
+    just the 5 new admin-specific ones — found the 4 pre-existing ones in use
+    (`project.create/update/delete`, `task.delete`) via a repo-wide grep rather than
+    guessing, translated all of them, and added a humanized fallback (e.g. "Task Assign")
+    for any future action added elsewhere in the codebase that isn't translated yet.
+  - Still outstanding: a full pass isn't done, just what's been found via live use —
+    haven't specifically checked every page at narrow widths, and Radix's Select
+    positioning under RTL (the Content popover side/align) hasn't been visually confirmed
+    live, only reasoned about.
 - [ ] **Phase 14 — Push to
   `https://github.com/fouadmo1223/Taskforge-DashBoard.git`** once the above is in a
   genuinely working state (per explicit instruction: push after finishing, not before).
