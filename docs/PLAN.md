@@ -1,6 +1,7 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phase 1 complete (analysis). Phase 2 (backend foundation) in progress.**
+Status: **Phase 1 complete. Phase 2 (backend foundation) partially complete — auth +
+stats + users API done, workspaces/projects/tasks admin endpoints still to do.**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -148,15 +149,36 @@ only when it must survive reload).
 Phase numbers match the 45-step order in the brief, compressed to real milestones:
 
 - [x] **Phase 1 — Analysis.** Done (this document, §1).
-- [ ] **Phase 2 — Backend foundation** (in Taskforge-Back):
-  - `User.isPlatformAdmin` field + migration note (manually flip one user's flag via
-    Mongo shell/seed to bootstrap the first admin — no self-serve promotion endpoint).
-  - `PlatformAdminGuard` + `@RequirePlatformAdmin()` decorator.
-  - `admin/` module skeleton, `admin-stats` endpoint (counts across
-    Users/Workspaces/Projects/Tasks, mirroring `DashboardsService`'s aggregate style).
-  - `UsersService.setSuspended()`, `UsersService.setPlatformAdmin()` (for bootstrapping
-    more admins later), `UsersService.adminVerifyEmail()`.
-  - Admin users list/detail endpoints (offset-paginated, search/filter).
+- [~] **Phase 2 — Backend foundation** (in Taskforge-Back, commit `880a56a`):
+  - [x] `User.isPlatformAdmin` field, plus `bannedAt`/`banReason`/`verifiedByAdminAt` for
+    a proper audit trail on those actions. Added `isPlatformAdmin` to the shared
+    `AuthUser` type too, so any frontend can read it right after login.
+  - [x] `PlatformAdminGuard` (`apps/api/src/common/guards/platform-admin.guard.ts`) —
+    looks the flag up fresh from the DB per-request (not embedded in the JWT), so
+    revoking admin access is immediate. No separate decorator was needed — plain
+    `@UseGuards(PlatformAdminGuard)` at controller-class level was enough, matching how
+    lean the rest of this codebase's guard usage is.
+  - [x] `UsersService.setSuspended()` (bans **and** unbans — also bumps `tokenEpoch` to
+    force-invalidate sessions on ban, reusing the existing "log out everywhere"
+    mechanism), `.adminVerifyEmail()`, `.setPlatformAdmin()`.
+  - [x] `admin/` module: `AdminStatsController` (`GET /admin/stats`) and
+    `AdminUsersController` (`GET /admin/users` list w/ search+filter+offset-pagination,
+    `GET /admin/users/:id` w/ cross-workspace stats, `PATCH .../verify`, `.../ban`,
+    `.../unban`). Injects User/Workspace/Project/Task/WorkspaceMembership models
+    directly, per the established cross-module-injection convention.
+  - [x] Bootstrap script: `apps/api/src/database/bootstrap-admin.ts` (run via
+    `pnpm --filter @flowdesk/api bootstrap-admin <email>`) — the existing `seed.ts` this
+    would have mirrored was deleted from this repo by the user at some point, so this is
+    a fresh minimal script rather than following a script that's no longer there.
+  - [ ] **Not yet done**: `DELETE /admin/users/:id` (deferred — needs the ownership-
+    transfer-blocking logic from §3 decided first), admin workspaces endpoints, admin
+    projects endpoints, admin tasks endpoints, admin audit-log endpoints/wiring into the
+    existing `AuditLog` schema (nullable `workspaceId`).
+  - **Known pre-existing divergence, not touched**: Taskforge-Back's `task.schema.ts`
+    still has the old `Checklist`/`ChecklistItem` sub-schema that was already removed
+    from `E:\trello`'s copy in an earlier, unrelated piece of work — the backend split
+    happened before that removal was made, so it was never carried over here. Unrelated
+    to the admin dashboard; flagging so it isn't mistaken for something this work broke.
 - [ ] **Phase 3 — This repo's foundation**: Vite scaffold, `@flowdesk/types`/`utils`
   copied in, API client + auth store (admin login re-uses the *same* `/auth/login`
   endpoint — a platform admin is still a `User`, just flagged), i18n (en/ar) + RTL,
@@ -186,5 +208,12 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
 ## 5. Progress log
 
 - **2026-09-19** — Phase 1 analysis complete via full codebase scan. Repo created
-  locally at `E:\Taskforge-DashBoard`, git initialized, this plan committed. Starting
-  Phase 2 (backend foundation in Taskforge-Back).
+  locally at `E:\Taskforge-DashBoard`, git initialized, this plan committed.
+- **2026-09-19** — Phase 2 backend foundation: `isPlatformAdmin`/ban/verify fields on
+  `User`, `PlatformAdminGuard`, `admin` module with stats + users endpoints, bootstrap
+  script. Pushed to Taskforge-Back as commit `880a56a`. To actually use the dashboard
+  once it exists, run `pnpm --filter @flowdesk/api bootstrap-admin <your-email>` against
+  the target database first — there is no self-serve way to become the first admin, by
+  design. Next: decide + build the delete-user ownership-transfer rule, then admin
+  workspaces/projects/tasks endpoints, then move to Phase 3 (this repo's frontend
+  foundation).
