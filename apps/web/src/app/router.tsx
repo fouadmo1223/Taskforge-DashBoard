@@ -5,6 +5,10 @@ import { AdminLayout } from '@/features/admin/layout/admin-layout';
 import { DashboardPage } from '@/features/admin/dashboard/dashboard-page';
 import { UsersListPage } from '@/features/admin/users/users-list-page';
 import { UserDetailPage } from '@/features/admin/users/user-detail-page';
+import { WorkspacesListPage } from '@/features/admin/workspaces/workspaces-list-page';
+import { WorkspaceDetailPage } from '@/features/admin/workspaces/workspace-detail-page';
+import { ProjectsListPage } from '@/features/admin/projects/projects-list-page';
+import { ProjectDetailPage } from '@/features/admin/projects/project-detail-page';
 import { ComingSoonPage } from '@/features/admin/coming-soon-page';
 
 export const router = createBrowserRouter([
@@ -27,8 +31,10 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: 'users', element: <UsersListPage /> },
       { path: 'users/:id', element: <UserDetailPage /> },
-      { path: 'workspaces', element: <ComingSoonPage titleKey="nav.workspaces" /> },
-      { path: 'projects', element: <ComingSoonPage titleKey="nav.projects" /> },
+      { path: 'workspaces', element: <WorkspacesListPage /> },
+      { path: 'workspaces/:id', element: <WorkspaceDetailPage /> },
+      { path: 'projects', element: <ProjectsListPage /> },
+      { path: 'projects/:id', element: <ProjectDetailPage /> },
       { path: 'activity', element: <ComingSoonPage titleKey="nav.activity" /> },
       { path: 'settings', element: <ComingSoonPage titleKey="nav.settings" /> },
     ],
