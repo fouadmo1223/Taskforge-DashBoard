@@ -1,8 +1,9 @@
 # Taskforge Admin Dashboard — Plan
 
-Status: **Phases 1-10 done (backend + frontend for users, workspaces, projects, tasks).
-Activity log and settings are still placeholder pages; no polish/responsive/RTL-QA pass
-yet.**
+Status: **Phases 1-11 done. Settings (Phase 12) needs the user's input on scope before
+it can be anything more than a placeholder — see the note there. RTL fixes and entrance
+animations started in Phase 13 as they were found during live use; the rest of that
+phase (full responsive/mobile pass, broader RTL QA, accessibility) is still open.**
 Last updated: 2026-09-19
 
 This file is the living plan for the platform-wide Admin Dashboard. Update it as work
@@ -237,8 +238,27 @@ Phase numbers match the 45-step order in the brief, compressed to real milestone
   off the Task document instead of re-deriving them. No edit/delete actions on tasks —
   wasn't asked for and content moderation at the task level felt out of scope for "manage
   the platform" vs. "moderate the discourse of every conversation happening on it."
-- [ ] **Phase 11 — Admin activity/audit log page.**
-- [ ] **Phase 12 — Settings page** (whatever's platform-configurable — scope TBD).
+- [x] **Phase 11 — Admin activity/audit log page** (Taskforge-Back commit `3346265`,
+  dashboard commit `7fd1965`): made `AuditLog.workspaceId` nullable so platform-only
+  actions (ban/unban/verify — genuinely no single workspace in scope) can be recorded at
+  all, added `AuditService.listAll()` for the cross-workspace admin view, and — this is
+  the part that actually matters — wired real audit recording into the admin actions
+  that already existed (verify/ban/unban/archive/restore) rather than just building an
+  empty log page with nothing writing to it. Project archive/restore record with that
+  project's real `workspaceId` (so it'd show up if that workspace ever gets its own audit
+  view too) with `actorLabel: 'Platform Admin'` to distinguish it from an in-workspace
+  action; user actions have no natural workspace so record `workspaceId: null`. Frontend
+  is a simple timeline with infinite scroll (cursor-based, matching the append-heavy-log
+  pagination choice from Phase 1's analysis) — deliberately not a DataTable, a chronological
+  feed reads better here than a sortable/filterable grid.
+- [ ] **Phase 12 — Settings page**: genuinely blocked, not skipped — the codebase has no
+  existing platform-wide config model to surface (workspace-level settings exist, e.g.
+  `Workspace.settings`, but nothing platform-wide), and the brief itself says "whatever's
+  platform-configurable." Needs the user to say what should actually live here (rate
+  limits? feature flags? maintenance mode? something else?) before it's anything more
+  than an empty placeholder — inventing settings nobody asked for would violate the
+  brief's own "do not create mock/static data" and "do not create pages nobody needs"
+  spirit just as much as mock data would.
 - [~] **Phase 13 — Polish pass** (started early, commit `fc063c3`): found and fixed a real
   RTL bug via live QA — Radix primitives (Select, Dialog, etc.) don't infer RTL from
   `document.dir`; they need an explicit `DirectionProvider` (`@radix-ui/react-direction`)
